@@ -1,73 +1,78 @@
-import { React , useState, useEffect } from 'react'
-import './App.css'
+import {useState , useEffect} from 'react';
 
-function App() {
-  const [cards , setCards] =useState([]);
-  // const [deckId , setDeckId] = useState([]);
+import './App.css';
 
-  let deckId = '';
-  useEffect(() => {
-   
-    const shuffleDeck = async ()=>{
-      const url = `https://www.deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1`
-
+export default function App(){
+    const [cards , setCards]= useState([]);
+    const [deckId , setDeckId] = useState('');
+    
+  useEffect(() =>{
+    const url = 'https://www.deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1'
+    const getDeckId = async ()=>{
       try{
         const res = await fetch(url);
         const data = await res.json();
+        setDeckId(data.deck_id)
 
-      if(typeof data !== 'undefined'){
-        deckId = data.deck_id
-        
-      }else{
-        console.error('cards ot in array', deckId ,data)
+      }catch(error){
+        console.error('data no available', data)
       }
-        console.log('deck',deckId)
-      }catch(err){
-        console.error(err)
-      }
-      // otfut3mywmrx
     }
-      // return () => shuffleDeck()
-  } , [])
+      getDeckId()
+  },[])
 
   useEffect(() => {
-    const drawCard = async()=>{
-      console.log('draw',deckId)
 
-      
-      const url = `https://www.deckofcardsapi.com/api/deck/${deckId}/draw/?count=52`;
+    if(!deckId) return;
+    const url = `https://www.deckofcardsapi.com/api/deck/${deckId}/draw/?count=52`
+    const getCards = async ()=> {
       try{
         const res = await fetch(url);
         const data = await res.json();
+        // console.log(data.cards)
+        setCards(data.cards)
+      }catch(error){
 
-        if(typeof data !== 'undefined') {
-           setCards(data.cards)
+      }  
+    }
+      getCards()
+  }, [deckId])
 
-        } else {
-          console.error('cards ot in array', deckId, data)
+  let player1;
+  let player2;
+    const handlePlay = (card)=>{
+        if(!player1){
+        player1 = card.value
+        console.log('p1', player1)
+        }else{
+          player2 = card.value;
+          console.log(player1 === player2 ? player1 = '': player2)
+          return;
         }
-       
-        console.log('draw',data.cards)
-      }catch(err){
-        console.error(err);
-      }
+        
     }
-      // return ()=>drawCard()
-  }, [])
-  return (
+
+  return(
     <>
       <ul>
-      {Array.isArray(cards)&& 
-           cards.map((card ,i) => (
-        <li key={i}>
-            {card.value}
-          list
-        </li>
-      ))
-    }
+      {cards.length > 0 ? (
+        cards.map((card , index) => (
+            <li key={index}>
+              <img
+              className='cards'
+              alt='no image'
+              src={card.image}
+              width={100}
+              onClick={()=>{
+                handlePlay(card)
+              }}
+              />
+            </li>
+        )) 
+      ) : (
+          <>Image Not Available</>
+        )}  
       </ul>
     </>
   )
 }
-
-export default App
