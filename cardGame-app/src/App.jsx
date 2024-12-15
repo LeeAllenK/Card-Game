@@ -1,119 +1,78 @@
-import React, { useState, useEffect } from 'react';
-import './App.css'
-const App = () => {
-  const [deckId, setDeckId] = useState(null);
-  const [cards, setCards] = useState([]);
-  const [unFlipped, setUnFlipped] = useState({});
-  const [val, setVal] = useState('');
-  const [val1, setVal1] = useState('');
+import {useState , useEffect} from 'react';
 
-  useEffect(() => {
-    const fetchDeckId = async () => {
-      try {
-        const response = await fetch('https://www.deckofcardsapi.com/api/deck/new/shuffle/');
-        const data = await response.json();
-        setDeckId(data.deck_id);
-      } catch (error) {
-        console.error('Error fetching deck ID:', error);
-      }
-    };
+import './App.css';
 
-    fetchDeckId();
-  }, []); // Empty dependency array ensures this runs only once
-
-  useEffect(() => {
-    const drawCards = async () => {
-      if (!deckId) return;
-
-      const url = `https://www.deckofcardsapi.com/api/deck/${deckId}/draw/?count=52`;
-      try {
+export default function App(){
+    const [cards , setCards]= useState([]);
+    const [deckId , setDeckId] = useState('');
+    
+  useEffect(() =>{
+    const url = 'https://www.deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1'
+    const getDeckId = async ()=>{
+      try{
         const res = await fetch(url);
         const data = await res.json();
-        setCards(data.cards);
-      } catch (error) {
-        console.error('Error fetching cards:', error);
+        setDeckId(data.deck_id)
+
+      }catch(error){
+        console.error('data no available', data)
       }
-    };
+    }
+      getDeckId()
+  },[])
 
-    drawCards();
-  }, [deckId]); // This runs only when deckId changes
+  useEffect(() => {
 
-  const handleFlip = (index) => {
-    setUnFlipped((prev) => ({
-      ...prev,
-      [index]: !prev[index],
-    }));
-  };
+    if(!deckId) return;
+    const url = `https://www.deckofcardsapi.com/api/deck/${deckId}/draw/?count=52`
+    const getCards = async ()=> {
+      try{
+        const res = await fetch(url);
+        const data = await res.json();
+        // console.log(data.cards)
+        setCards(data.cards)
+      }catch(error){
 
-  const handleCardValue = (card  ,e) => {
-    switch (card.value) {
-      case "JACK":
-        val1 ? setVal1('11') : null;
-        break;
-      case "QUEEN":
-       val1?  setVal1('12') : null;
-        break;
-      case "KING":
-        val1 ? setVal1('13') : null;
-        break;
-      case "ACE":
-        val1 ? setVal1('14'): null;
-        break;
-      default:
-        console.log('Card value not available');
+      }  
+    }
+      getCards()
+  }, [deckId])
+
+  let player1;
+  let player2;
+    const handlePlay = (card)=>{
+        if(!player1){
+        player1 = card.value
+        console.log('p1', player1)
+        }else{
+          player2 = card.value;
+          console.log(player1 === player2 ? player1 = '': player2)
+          return;
+        }
+        
     }
 
-    if (!val) {
-      setVal(card.value);
-    
-    } 
-      if(!val1 && val){
-        setVal1(card.value)
-      }   else {
-      // setVal1(card.value);
-      handlePlay(val, val1 , e);
-    }
-  };
-
-  const handlePlay = (card1, card2 , e) => {
-    console.log(card1, card2);
-   
-    if (card1 > card2) {
-      console.log('Player wins!');
-      setVal(null)
-      setVal1(null)
-    } 
-// else if (card1 < card2) {
-//       console.log('Opponent wins!');
-//     }else if(card1 === card2){
-//       console.log('tie')
-//       }
-  };  
-
-  return (
-    <div className='gameBoard'>
-      <h1>`${val.length > 0 && val1.length > 0 ? `${val} ${val1}`: null}`</h1>
+  return(
+    <>
+      <ul>
       {cards.length > 0 ? (
-          cards.map((card, index) => (
-            <div key={index}>
+        cards.map((card , index) => (
+            <li key={index}>
               <img
-                className='cards'
-                alt='no image'
-                src={unFlipped[index] ? card.image : 'https://www.deckofcardsapi.com/static/img/back.png'}
-                width={100}
-                onClick={(e) => {
-                  handleFlip(index);
-                  handleCardValue(card,e);
-                }}
-                style={{ cursor: 'pointer' }}
+              className='cards'
+              alt='no image'
+              src={card.image}
+              width={100}
+              onClick={()=>{
+                handlePlay(card)
+              }}
               />
-            </div>
-          ))
+            </li>
+        )) 
       ) : (
-        <p>No cards drawn yet.</p>
-      )}
-    </div>
-  );
-};
-
-export default App;
+          <>Image Not Available</>
+        )}  
+      </ul>
+    </>
+  )
+}
