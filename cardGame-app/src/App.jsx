@@ -7,6 +7,7 @@ const App = () => {
   const [val, setVal] = useState(null);
   const [val1, setVal1] = useState('');
   const [disabled , setDisabled] = useState({});
+  const [winner , setWinner] = useState('')
   useEffect(() => {
     const fetchDeckId = async () => {
       try {
@@ -83,6 +84,7 @@ const App = () => {
       console.log('Player wins!');
       setVal(card.value)
       setVal1('')
+      setWinner(card1)
     } else if (card1 < card2) {
         setVal(card.value)
         setVal1('')
@@ -100,7 +102,7 @@ const App = () => {
 
   return (
     <div className='gameBoard'>
-      <h1>`${val  && val1.length > 0 ? `${val} ${val1}`: null}`</h1>
+      <h1>{winner ? `${winner} IS THE BIGGER CARD`:null}`</h1>
       {cards.length > 0 ? (
           cards.map((card, index) => (
             <div key={index}>
