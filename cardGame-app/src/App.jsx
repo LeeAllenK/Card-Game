@@ -4,9 +4,9 @@ const App = () => {
   const [deckId, setDeckId] = useState(null);
   const [cards, setCards] = useState([]);
   const [unFlipped, setUnFlipped] = useState({});
-  const [val, setVal] = useState('');
+  const [val, setVal] = useState(null);
   const [val1, setVal1] = useState('');
-  const [disabled , setDisabled] = useState(false);
+  const [disabled , setDisabled] = useState({});
   useEffect(() => {
     const fetchDeckId = async () => {
       try {
@@ -49,9 +49,10 @@ const App = () => {
     switch (card.value) {
       case "JACK":
         val1 ? setVal1('11') : null;
+      
         break;
       case "QUEEN":
-       val1?  setVal1('12') : null;
+       val1 ?  setVal1('12') : null;
         break;
       case "KING":
         val1 ? setVal1('13') : null;
@@ -82,33 +83,43 @@ const App = () => {
       console.log('Player wins!');
       setVal(card.value)
       setVal1('')
-      setDisabled(true)
     } else if (card1 < card2) {
+        setVal(card.value)
+        setVal1('')
       console.log('Opponent wins!');
     }else if(card1 === card2){
-      console.log('tie')
+      setVal(card.value)
+      setVal1('')
+      setDisabled((prev) => ({
+        ...prev,
+        [index]: true
+      }))
+      console.log('It\'s a tie!');
       }
   };  
 
   return (
     <div className='gameBoard'>
-      <h1>`${val.length > 0 && val1.length > 0 ? `${val} ${val1}`: null}`</h1>
+      <h1>`${val  && val1.length > 0 ? `${val} ${val1}`: null}`</h1>
       {cards.length > 0 ? (
           cards.map((card, index) => (
             <div key={index}>
+        
               <img
                 className='cards'
                 alt='no image'
                 src={unFlipped[index] ? card.image : 'https://www.deckofcardsapi.com/static/img/back.png'}
                 width={100}
                 onClick={(e) => {
-                  
+                 if(!disabled[index]){
                   handleFlip(index);
                   handleCardValue(card,index, );
+                }
                   
                 }}
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: disabled[index] ? 'not-allowed' :'pointer' }}
               />
+            
             </div>
           ))
       ) : (
