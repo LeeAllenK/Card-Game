@@ -5,7 +5,7 @@
   text-align: center;
 }
 
-ul{
+.gameBoard{
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;

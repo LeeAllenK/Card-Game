@@ -6,7 +6,7 @@ const App = () => {
   const [unFlipped, setUnFlipped] = useState({});
   const [val, setVal] = useState('');
   const [val1, setVal1] = useState('');
-
+  const [disabled , setDisabled] = useState(false);
   useEffect(() => {
     const fetchDeckId = async () => {
       try {
@@ -45,7 +45,7 @@ const App = () => {
     }));
   };
 
-  const handleCardValue = (card  ,e) => {
+  const handleCardValue = (card  ,index) => {
     switch (card.value) {
       case "JACK":
         val1 ? setVal1('11') : null;
@@ -71,23 +71,23 @@ const App = () => {
         setVal1(card.value)
       }   else {
       // setVal1(card.value);
-      handlePlay(val, val1 , e);
+      handlePlay(val, val1 , card , index);
     }
   };
 
-  const handlePlay = (card1, card2 , e) => {
+  const handlePlay = (card1, card2 , card , index) => {
     console.log(card1, card2);
-   
+    console.log(card.value)
     if (card1 > card2) {
       console.log('Player wins!');
-      setVal(null)
-      setVal1(null)
-    } 
-// else if (card1 < card2) {
-//       console.log('Opponent wins!');
-//     }else if(card1 === card2){
-//       console.log('tie')
-//       }
+      setVal(card.value)
+      setVal1('')
+      setDisabled(true)
+    } else if (card1 < card2) {
+      console.log('Opponent wins!');
+    }else if(card1 === card2){
+      console.log('tie')
+      }
   };  
 
   return (
@@ -102,8 +102,10 @@ const App = () => {
                 src={unFlipped[index] ? card.image : 'https://www.deckofcardsapi.com/static/img/back.png'}
                 width={100}
                 onClick={(e) => {
+                  
                   handleFlip(index);
-                  handleCardValue(card,e);
+                  handleCardValue(card,index, );
+                  
                 }}
                 style={{ cursor: 'pointer' }}
               />
