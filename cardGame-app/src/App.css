@@ -32,7 +32,7 @@
     animation: logo-spin infinite 20s linear;
   }
 }
-.gameBoard{
+ul{
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -43,9 +43,9 @@ li{
   display: flex;
   
 }
-.card {
+/* .card {
     
-}
+} */
 
 .read-the-docs {
   color: #888;
